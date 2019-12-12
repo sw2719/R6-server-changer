@@ -1,7 +1,7 @@
 # README
 * Only supports English currently.
 * How to use it is pretty straightforward.
-* Written in Python, GUI is Tkinter.
+* Written in Python, GUI in Tkinter.
 
 # Server list
 default: Auto-select based on ping
