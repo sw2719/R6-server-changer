@@ -66,7 +66,9 @@ def open_r6_steam():
         print('Launching Steam...')
         subprocess.run("start steam://rungameid/359550",
                        shell=True, check=True)
+        main.destroy()
     except subprocess.CalledProcessError:
+        msgbox.showwarning('Error', 'Could not launch game')
         pass
 
 
