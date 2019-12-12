@@ -125,3 +125,4 @@ dmypy.json
 .pyre/
 setup.py
 *.bat
+setup_ko.py
