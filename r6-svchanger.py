@@ -73,8 +73,8 @@ def open_r6_steam():
 
 
 main = tk.Tk()
-main.title("R6S Server")
-main.geometry("250x140+600+250")
+main.title("")
+main.geometry("210x160+600+250")
 main.resizable(False, False)
 
 current = tk.StringVar()
@@ -100,16 +100,16 @@ server_cbox.pack(side='top', anchor='center', padx=11, pady=(11, 1))
 button_frame = tk.Frame(main)
 button_frame.pack(side='bottom', pady=(3, 6))
 
-exit_button = ttk.Button(button_frame, text='Exit', width=5)
+exit_button = ttk.Button(button_frame, text='Exit', width=8)
 exit_button['command'] = main.destroy
 exit_button.pack(side='left', padx=3)
 
-button_steam = ttk.Button(button_frame, text='Open R6 and Exit (Steam only)')
-button_steam['command'] = open_r6_steam
-button_steam.pack(side='right', padx=3)
-
-change_button = ttk.Button(main, text='Change')
+change_button = ttk.Button(button_frame, text='Change', width=13)
 change_button['command'] = change
-change_button.pack(side='bottom', padx=11, pady=3, fill='x')
+change_button.pack(side='right', padx=3)
+
+open_r6_steam_button = ttk.Button(main, text='Launch R6S (Steam only)', width=23)
+open_r6_steam_button['command'] = open_r6_steam
+open_r6_steam_button.pack(side='bottom', padx=11, pady=3)
 
 main.mainloop()
