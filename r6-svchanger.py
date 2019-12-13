@@ -95,7 +95,6 @@ def change():
 
 def open_r6_steam():
     try:
-        print('Launching Steam...')
         subprocess.run("start steam://rungameid/359550",
                        shell=True, check=True)
         main.destroy()
@@ -122,7 +121,7 @@ server_cbox = ttk.Combobox(main,
                            state="readonly",
                            values=list(sv_dict.values()),
                            width=30,
-                           height=12)
+                           height=len(sv_dict))
 try:
     server_cbox.set(sv_dict[get_current()])
 except KeyError:
