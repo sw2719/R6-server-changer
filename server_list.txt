@@ -1,0 +1,12 @@
+default=Ping based (Auto) - default
+eus=US East - eus
+cus=US Central - cus
+scus=US South Central - scus
+wus=US West - wus
+sbr=Brazil South - sbr
+neu=Europe North - neu
+weu=Europe West - weu
+eas=Asia East - eas
+seas=Asia South East - seas
+eau=Australia East - eau
+wja=Japan West - wja
