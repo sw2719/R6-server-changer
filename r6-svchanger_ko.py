@@ -2,30 +2,62 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import messagebox as msgbox
 import os
+import sys
 import subprocess
+import requests
+import threading
 
+URL = 'https://raw.githubusercontent.com/sw2719/R6S-server-changer/master/server_list_ko.txt'  # NOQA
 USER_DIR = os.path.expanduser('~')
 R6_DIR = USER_DIR + '\\Documents\\My Games\\Rainbow Six - Siege'
 
 for root, dirs, files in os.walk(R6_DIR):
     if 'GameSettings.ini' in files:
         R6_INI = root + '\\GameSettings.ini'
-        R6_INI_ALT = root + '\\GameSettings_.ini'
 
-sv_dict = {
-    'default': '핑 기반 (자동) - default',
-    'eus':     '미국 동부 - eus',
-    'cus':     '미국 중부 - cus',
-    'scus':    '미국 남부 - scus',
-    'wus':     '미국 서부 - wus',
-    'sbr':     '브라질 남부 - sbr',
-    'neu':     '북유럽 - neu',
-    'weu':     '서유럽 - weu',
-    'eas':     '동아시아 - eas',
-    'seas':    '동남아시아 - seas',
-    'eau':     '호주 동부 - eau',
-    'wja':     '일본 서부 - wja'
-}
+try:
+    with open('server_list_ko.txt', 'r', encoding='utf-8') as f:
+        raw = f.read()
+except (OSError, FileNotFoundError):
+    open('server_list_ko.txt', 'w', encoding='utf-8').close()
+    raw = ''
+
+
+def checkupdate():
+    def get_sv_list():
+        global raw
+        try:
+            response = requests.get(URL)
+            response.encoding = 'utf-8'
+            sv_raw = response.text
+            if raw != sv_raw:
+                if msgbox.askyesno('정보',
+                                   '새 서버목록이 있습니다.\n'
+                                   '지금 다운로드 하시겠습니까?'):
+                    with open('server_list_ko.txt', 'w', encoding='utf-8') as f:  # NOQA
+                        f.write(sv_raw)
+                    if getattr(sys, 'frozen', False):
+                        os.execv('R6 Server Changer KOR.exe', sys.argv)
+                    else:
+                        msgbox.showinfo('완료',
+                                        '변경 사항을 적용하려면 재시작하세요.')
+        except requests.RequestException:
+            msgbox.showerror('오류',
+                             '다운로드 중 오류가 발생했습니다.')
+    t = threading.Thread(target=get_sv_list)
+    t.start()
+
+
+sv_dict = {}
+
+for line in raw.splitlines():
+    buf = line.split('=')
+    sv_dict[buf[0]] = buf[1]
+
+try:
+    del buf
+except Exception:
+    pass
 
 
 def get_current():
@@ -41,7 +73,7 @@ def get_current():
 def change():
     index = server_cbox.current()
     target = tuple(sv_dict.keys())[index]
-    print('Target server is' , target)
+    print('Target server is', target)
 
     with open(R6_INI, 'r') as f:
         ini = f.readlines()
@@ -98,18 +130,19 @@ except KeyError:
 server_cbox.pack(side='top', anchor='center', padx=11, pady=(11, 1))
 
 button_frame = tk.Frame(main)
-button_frame.pack(side='bottom', pady=(3, 6))
+button_frame.pack(side='bottom', padx=25, pady=(3, 6))
 
 exit_button = ttk.Button(button_frame, text='나가기', width=8)
 exit_button['command'] = main.destroy
-exit_button.pack(side='left', padx=3)
+exit_button.pack(side='left', padx=(0, 3))
 
-change_button = ttk.Button(button_frame, text='변경', width=13)
+change_button = ttk.Button(button_frame, text='변경', width=12)
 change_button['command'] = change
-change_button.pack(side='right', padx=3)
+change_button.pack(side='right', padx=(3, 0))
 
-open_r6_steam_button = ttk.Button(main, text='게임 실행 (Steam)', width=23)
+open_r6_steam_button = ttk.Button(main, text='게임 실행 (Steam)', width=22)  # NOQA
 open_r6_steam_button['command'] = open_r6_steam
-open_r6_steam_button.pack(side='bottom', padx=11, pady=3)
+open_r6_steam_button.pack(side='bottom', padx=25, pady=3)
 
+main.after(100, checkupdate)
 main.mainloop()
