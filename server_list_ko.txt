@@ -1,0 +1,12 @@
+default=핑 기반 (자동) - default
+eus=미국 동부 - eus
+cus=미국 중부 - cus
+scus=미국 남부 - scus
+wus=미국 서부 - wus
+sbr=브라질 남부 - sbr
+neu=북유럽 - neu
+weu=서유럽 - weu
+eas=동아시아 - eas
+seas=동남아시아 - seas
+eau=호주 동부 - eau
+wja=서일본 - wja
