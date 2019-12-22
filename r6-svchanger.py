@@ -1,5 +1,6 @@
 import tkinter as tk
 import tkinter.ttk as ttk
+from tkinter import filedialog
 from tkinter import messagebox as msgbox
 import os
 import sys
@@ -7,30 +8,52 @@ import subprocess
 import requests
 import threading
 
+main = tk.Tk()
+main.title("")
+main.geometry("210x160+600+250")
+main.resizable(False, False)
+
 URL = 'https://raw.githubusercontent.com/sw2719/R6S-server-changer/master/server_list.txt'  # NOQA
 USER_DIR = os.path.expanduser('~')
 R6_DIR = USER_DIR + '\\Documents\\My Games\\Rainbow Six - Siege'
 
-for root, dirs, files in os.walk(R6_DIR):
-    if 'GameSettings.ini' in files:
-        R6_INI = root + '\\GameSettings.ini'
+if os.path.isfile('ini_path.txt'):
+    with open('ini_path.txt', 'r') as f:
+        r6_ini = f.read().strip()
+else:
+    for root, dirs, files in os.walk(R6_DIR):
+        if 'GameSettings.ini' in files:
+            r6_ini = root + '\\GameSettings.ini'
+
+if not os.path.isfile(r6_ini):
+    while True:
+        msgbox.showwarning('Warning',
+                           'Could not locate GameSettings.ini automatically.\n' +
+                           'Please locate it manually in order to continue.' +
+                           'Example: Documents/My Games/Rainbow Six - Siege/(Random numbers)/GameSettings.ini')
+        r6_ini = filedialog.askopenfile().name
+        if os.path.isfile(r6_ini):
+            with open('ini_path.txt', 'w') as f:
+                f.write(r6_ini)
+            break
+
 
 try:
     with open('server_list.txt', 'r') as f:
-        raw = f.read()
+        local_raw = f.read()
 except OSError:
     open('server_list.txt', 'w').close()
-    raw = ''
+    local_raw = ''
 
 
 def checkupdate():
     def get_sv_list():
-        global raw
+        global local_raw
         try:
             response = requests.get(URL)
             response.encoding = 'utf-8'
             sv_raw = response.text
-            if raw != sv_raw:
+            if local_raw != sv_raw:
                 if msgbox.askyesno('Info',
                                    'New server list is available.\n'
                                    'Download it now?'):
@@ -50,7 +73,7 @@ def checkupdate():
 
 sv_dict = {}
 
-for line in raw.splitlines():
+for line in local_raw.splitlines():
     buf = line.split('=')
     sv_dict[buf[0]] = buf[1]
 
@@ -61,7 +84,7 @@ except Exception:
 
 
 def get_current():
-    with open(R6_INI, 'r') as f:
+    with open(r6_ini, 'r') as f:
         ini = f.readlines()
 
     for line in ini:
@@ -75,14 +98,14 @@ def change():
     target = tuple(sv_dict.keys())[index]
     print('Target server is', target)
 
-    with open(R6_INI, 'r') as f:
+    with open(r6_ini, 'r') as f:
         ini = f.readlines()
 
     for index, line in enumerate(ini):
         if 'DataCenterHint=' in line:
             ini[index] = f'DataCenterHint={target}\n'
 
-    with open(R6_INI, 'w') as f:
+    with open(r6_ini, 'w') as f:
         for line in ini:
             f.write(line)
 
@@ -102,11 +125,6 @@ def open_r6_steam():
         msgbox.showwarning('Error', 'Could not launch game')
         pass
 
-
-main = tk.Tk()
-main.title("")
-main.geometry("210x160+600+250")
-main.resizable(False, False)
 
 current = tk.StringVar()
 try:
