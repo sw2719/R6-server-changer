@@ -5,9 +5,7 @@
 * Work in progress!
 
 # To dos
-* Add handling for multiple accounts
-* Polish UI
-* If possible, Add launching game via UPLAY
+* If possible, Add launching game via UPLAYUI
 
 # Server list
 * default: Auto-select based on ping
