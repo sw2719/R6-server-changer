@@ -13,29 +13,33 @@ main.title("")
 main.geometry("210x160+600+250")
 main.resizable(False, False)
 
-URL = 'https://raw.githubusercontent.com/sw2719/R6S-server-changer/master/server_list.txt'  # NOQA
-USER_DIR = os.path.expanduser('~')
-R6_DIR = USER_DIR + '\\Documents\\My Games\\Rainbow Six - Siege'
+URL = 'https://raw.githubusercontent.com/sw2719/R6S-server-changer/master/server_list.txt'
 
-if os.path.isfile('ini_path.txt'):
-    with open('ini_path.txt', 'r') as f:
-        r6_ini = f.read().strip()
-else:
-    for root, dirs, files in os.walk(R6_DIR):
-        if 'GameSettings.ini' in files:
-            r6_ini = root + '\\GameSettings.ini'
+doc_dir = os.path.expanduser('~')
+r6_dir = doc_dir + '\\Documents\\My Games\\Rainbow Six - Siege'
 
-if not os.path.isfile(r6_ini):
-    while True:
-        msgbox.showwarning('Warning',
-                           'Could not locate GameSettings.ini automatically.\n' +
-                           'Please locate it manually in order to continue.' +
-                           'Example: Documents/My Games/Rainbow Six - Siege/(Random numbers)/GameSettings.ini')
-        r6_ini = filedialog.askopenfile().name
-        if os.path.isfile(r6_ini):
-            with open('ini_path.txt', 'w') as f:
-                f.write(r6_ini)
-            break
+if not os.path.isdir(r6_dir):
+    if not os.path.isfile('doc_path.txt'):
+        while True:
+            msgbox.showwarning('Warning',
+                               'Could not locate GameSettings.ini automatically.\n' +
+                               "Select 'Documents' folder in the following dialog to continue.")
+            path = filedialog.askopenfile().name
+            if os.path.isdir(path + '\\My Games\\Rainbow Six - Siege'):
+                with open('doc_path.txt', 'w') as f:
+                    f.write(path)
+                r6_dir = path + '\\My Games\\Rainbow Six - Siege'
+                break
+    else:
+        with open('doc_path.txt', 'r') as f:
+            doc_dir = f.read().strip()
+            r6_dir = doc_dir + '\\My Games\\Rainbow Six - Siege'
+
+r6_ini = []
+
+for root, dirs, files in os.walk(r6_dir):
+    if 'GameSettings.ini' in files:
+        r6_ini.append(root + '\\GameSettings.ini')
 
 
 try:
@@ -64,6 +68,8 @@ def checkupdate():
                     else:
                         msgbox.showinfo('Done',
                                         'Restart to apply changes')
+            else:
+                print('Server list update check completed.')
         except requests.RequestException:
             msgbox.showerror('Error',
                              'An error occured while downloading.')
@@ -84,13 +90,20 @@ except Exception:
 
 
 def get_current():
-    with open(r6_ini, 'r') as f:
-        ini = f.readlines()
+    region_list = []
 
-    for line in ini:
-        if 'DataCenterHint=' in line:
-            value = line.strip().split('=')[1]
-            return value
+    for ini in r6_ini:
+        with open(ini, 'r') as f:
+            ini = f.readlines()
+
+        for line in ini:
+            if 'DataCenterHint=' in line:
+                value = line.strip().split('=')[1]
+                region_list.append(value)
+    if(len(set(region_list)) == 1):
+        return region_list[0]
+    else:
+        return 'N/A'
 
 
 def change():
@@ -98,16 +111,17 @@ def change():
     target = tuple(sv_dict.keys())[index]
     print('Target server is', target)
 
-    with open(r6_ini, 'r') as f:
-        ini = f.readlines()
+    for ini_file in r6_ini:
+        with open(ini_file, 'r') as f:
+            ini = f.readlines()
 
-    for index, line in enumerate(ini):
-        if 'DataCenterHint=' in line:
-            ini[index] = f'DataCenterHint={target}\n'
+        for index, line in enumerate(ini):
+            if 'DataCenterHint=' in line:
+                ini[index] = f'DataCenterHint={target}\n'
 
-    with open(r6_ini, 'w') as f:
-        for line in ini:
-            f.write(line)
+        with open(ini_file, 'w') as f:
+            for line in ini:
+                f.write(line)
 
     if get_current() != target:
         msgbox.showerror('Error', 'Failed to change server')
@@ -126,9 +140,19 @@ def open_r6_steam():
         pass
 
 
+def sv_different_error():
+    msgbox.showwarning('Warning', 'It looks like you have more than one account' + '\n' +
+                       'and they are set to different servers.' + '\n\n' +
+                       "Change server and all accounts' settings will be set to the server you want.")
+
+
 current = tk.StringVar()
 try:
-    current.set('Current server: ' + sv_dict[get_current()].split(' - ')[0])
+    if not get_current() == 'N/A':
+        current.set('Current server: ' + sv_dict[get_current()].split(' - ')[0])
+    else:
+        main.after(50, sv_different_error)
+        current.set('Current server: N/A')
 except KeyError:
     current.set('Current server: Unknown or Invalid')
 
@@ -145,6 +169,9 @@ try:
 except KeyError:
     pass
 server_cbox.pack(side='top', anchor='center', padx=11, pady=(11, 1))
+
+acc_label = tk.Label(main, text='%s accounts detected' % len(r6_ini))
+acc_label.pack(pady=(5, 0))
 
 button_frame = tk.Frame(main)
 button_frame.pack(side='bottom', padx=25, pady=(3, 6))
