@@ -2,10 +2,9 @@
 * Only supports English and Korean currently.
 * How to use it is pretty straightforward.
 * Written in Python 3.7, GUI in Tkinter.
-* Work in progress!
 
 # To dos
-* If possible, Add launching game via UPLAYUI
+* If possible, Add launching game via UPLAY
 
 # Server list
 * default: Auto-select based on ping
