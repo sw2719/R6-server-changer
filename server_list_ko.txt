@@ -1,4 +1,4 @@
-default=Ping based (Auto)
+default=낮은 핑 자동 선택
 eastus=미국 동부
 centralus=미국 중부
 southcentralus=미국 중부
