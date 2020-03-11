@@ -2,11 +2,8 @@
 * Only supports English and Korean currently.
 * How to use it is pretty straightforward.
 * Written in Python 3.7, GUI in Tkinter.
-* Work in progress!
 
 # To dos
-* Add handling for multiple accounts
-* Polish UI
 * If possible, Add launching game via UPLAY
 
 # Server list
