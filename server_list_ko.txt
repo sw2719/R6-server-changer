@@ -10,5 +10,5 @@ southafricanorth=남아프리카 북부
 eastasia=동아시아
 southeastasia=동남아시아
 australiaeast=호주 동부
-australiasoutheast = 호주 남동부
+australiasoutheast=호주 남동부
 japanwest=서일본
