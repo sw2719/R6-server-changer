@@ -10,7 +10,9 @@ import threading
 import locale
 import gettext
 from ruamel.yaml import YAML
+from packaging import version
 
+VERSION = '1.1'
 LOCALE = locale.getdefaultlocale()[0]
 
 yaml = YAML()
@@ -26,7 +28,8 @@ main.title("")
 main.geometry("210x190+600+250")
 main.resizable(False, False)
 
-URL = 'https://raw.githubusercontent.com/sw2719/R6S-server-changer/master/server_list.yml'
+LIST_URL = 'https://raw.githubusercontent.com/sw2719/R6S-server-changer/master/server_list.yml'
+VERSION_URL = 'https://raw.githubusercontent.com/sw2719/R6S-server-changer/master/version.yml'
 
 doc_dir = os.path.expanduser('~')
 r6_dir = doc_dir + '\\Documents\\My Games\\Rainbow Six - Siege'
@@ -64,11 +67,26 @@ except OSError:
 
 
 def checkupdate():
-    def get_sv_list():
+    def get_update():
         global local_raw
         try:
-            response = requests.get(URL)
+            v_response = requests.get(VERSION_URL)
+            response = requests.get(LIST_URL)
+
+            v_response.raise_for_status()
             response.raise_for_status()
+
+            sv_version = yaml.load(v_response.text)['version']
+
+            if version.parse(VERSION) < version.parse(sv_version):
+                msgbox.showinfo(_('Update available'), _('Please download new version from GitHub') + '\n' +
+                                _('to continue using this program.'))
+
+                os.startfile('https://github.com/sw2719/R6S-server-changer/releases')
+                os._exit(0)
+            else:
+                print('New version check completed.')
+
             response.encoding = 'utf-8'
             sv_raw = response.text
             if local_raw != sv_raw and sv_raw:
@@ -94,7 +112,7 @@ def checkupdate():
         except requests.RequestException:
             msgbox.showerror(_('Error'),
                              _('An error occured while checking for new server list.'))
-    t = threading.Thread(target=get_sv_list)
+    t = threading.Thread(target=get_update)
     t.start()
 
 
