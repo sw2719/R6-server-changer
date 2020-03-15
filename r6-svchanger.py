@@ -7,13 +7,26 @@ import sys
 import subprocess
 import requests
 import threading
+import locale
+import gettext
+from ruamel.yaml import YAML
+
+LOCALE = locale.getdefaultlocale()[0]
+
+yaml = YAML()
+
+t = gettext.translation('r6_switcher',
+                        localedir='locale',
+                        languages=[LOCALE],
+                        fallback=True)
+_ = t.gettext
 
 main = tk.Tk()
 main.title("")
 main.geometry("210x160+600+250")
 main.resizable(False, False)
 
-URL = 'https://raw.githubusercontent.com/sw2719/R6S-server-changer/master/server_list.txt'
+URL = 'https://raw.githubusercontent.com/sw2719/R6S-server-changer/master/server_list.yml'
 
 doc_dir = os.path.expanduser('~')
 r6_dir = doc_dir + '\\Documents\\My Games\\Rainbow Six - Siege'
@@ -21,9 +34,9 @@ r6_dir = doc_dir + '\\Documents\\My Games\\Rainbow Six - Siege'
 if not os.path.isdir(r6_dir):
     if not os.path.isfile('doc_path.txt'):
         while True:
-            msgbox.showwarning('Warning',
-                               'Could not locate GameSettings.ini automatically.\n' +
-                               "Select 'Documents' folder in the following dialog to continue.")
+            msgbox.showwarning(_('Warning'),
+                               _('Could not locate GameSettings.ini automatically.') + '\n' +
+                               _("Select 'Documents' folder in the following dialog to continue."))
             path = filedialog.askopenfile().name
             if os.path.isdir(path + '\\My Games\\Rainbow Six - Siege'):
                 with open('doc_path.txt', 'w') as f:
@@ -43,10 +56,10 @@ for root, dirs, files in os.walk(r6_dir):
 
 
 try:
-    with open('server_list.txt', 'r') as f:
+    with open('server_list.yml', 'r', encoding='utf-8') as f:
         local_raw = f.read()
 except OSError:
-    open('server_list.txt', 'w').close()
+    open('server_list.yml', 'w').close()
     local_raw = ''
 
 
@@ -55,38 +68,42 @@ def checkupdate():
         global local_raw
         try:
             response = requests.get(URL)
+            response.raise_for_status()
             response.encoding = 'utf-8'
             sv_raw = response.text
-            if local_raw != sv_raw:
-                if msgbox.askyesno('Info',
-                                   'New server list is available.\n'
-                                   'Download it now?'):
-                    with open('server_list.txt', 'w') as f:
-                        f.write(sv_raw)
-                    if getattr(sys, 'frozen', False):
-                        os.execv('R6 Server Changer.exe', sys.argv)
-                    else:
-                        msgbox.showinfo('Done',
-                                        'Restart to apply changes')
+            if local_raw != sv_raw and sv_raw:
+                if msgbox.askyesno(_('Info'),
+                                   _('New server list is available.') + '\n' +
+                                   _('Download it now?')):
+                    try:
+                        with open('server_list.yml', 'w') as f:
+                            f.write(sv_raw)
+                        if getattr(sys, 'frozen', False):
+                            os.execv('R6 Server Changer.exe', sys.argv)
+                        else:
+                            msgbox.showinfo(_('Done'),
+                                            _('Restart to apply changes.'))
+                    except requests.RequestException:
+                        msgbox.showerror(_('Error'),
+                                         _('An error occured while downloading.'))
+                else:
+                    msgbox.showwarning(_('Warning'), _('You chose not to download new server list.') + '\n' +
+                                       _('Server changer might not work.'))
             else:
                 print('Server list update check completed.')
         except requests.RequestException:
-            msgbox.showerror('Error',
-                             'An error occured while downloading.')
+            msgbox.showerror(_('Error'),
+                             _('An error occured while checking for new server list.'))
     t = threading.Thread(target=get_sv_list)
     t.start()
 
 
-sv_dict = {}
+local_yml = yaml.load(local_raw)
 
-for line in local_raw.splitlines():
-    buf = line.split('=')
-    sv_dict[buf[0]] = buf[1]
-
-try:
-    del buf
-except Exception:
-    pass
+if LOCALE == 'ko_KR':
+    sv_dict = local_yml['ko']
+else:
+    sv_dict = local_yml['en']
 
 
 def get_current():
@@ -124,37 +141,33 @@ def change():
                 f.write(line)
 
     if get_current() != target:
-        msgbox.showerror('Error', 'Failed to change server')
+        msgbox.showerror(_('Error'), _('Failed to change server.'))
 
-    current.set('Current server: ' + sv_dict[get_current()].split(' - ')[0])
+    current.set(_('Current server: ') + sv_dict[get_current()].split(' - ')[0])
     main.update()
 
 
 def open_r6_steam():
-    try:
-        subprocess.run("start steam://rungameid/359550",
-                       shell=True, check=True)
-        main.destroy()
-    except subprocess.CalledProcessError:
-        msgbox.showwarning('Error', 'Could not launch game')
-        pass
+    subprocess.run("start steam://rungameid/359550",
+                   shell=True, check=True)
+    main.destroy()
 
 
-def sv_different_error():
-    msgbox.showwarning('Warning', 'It looks like you have more than one account' + '\n' +
-                       'and they are set to different servers.' + '\n\n' +
-                       "Change server and all accounts' settings will be set to the server you want.")
+def sv_different_warning():
+    msgbox.showwinfo(_('Info'), _('It looks like you have more than one account') + '\n' +
+                     _('and they are set to different servers.') + '\n\n' +
+                     _("Change server and all accounts' server will be set to the selected one."))
 
 
 current = tk.StringVar()
 try:
     if not get_current() == 'N/A':
-        current.set('Current server: ' + sv_dict[get_current()].split(' - ')[0])
+        current.set(_('Current server: ') + sv_dict[get_current()].split(' - ')[0])
     else:
-        main.after(50, sv_different_error)
-        current.set('Current server: N/A')
+        main.after(50, sv_different_warning)
+        current.set(_('Current server: N/A'))
 except KeyError:
-    current.set('Current server: Unknown or Invalid')
+    current.set(_('Current server: Unknown or Invalid'))
 
 current_label = tk.Label(main, textvariable=current)
 current_label.pack(side='top', anchor='w', padx=11, pady=(9, 0))
@@ -170,21 +183,21 @@ except KeyError:
     pass
 server_cbox.pack(side='top', anchor='center', padx=11, pady=(11, 1))
 
-acc_label = tk.Label(main, text='%s accounts detected' % len(r6_ini))
+acc_label = tk.Label(main, text=_('%s accounts detected') % len(r6_ini))
 acc_label.pack(pady=(5, 0))
 
 button_frame = tk.Frame(main)
 button_frame.pack(side='bottom', padx=25, pady=(3, 6))
 
-exit_button = ttk.Button(button_frame, text='Exit', width=8)
+exit_button = ttk.Button(button_frame, text=_('Exit'), width=8)
 exit_button['command'] = main.destroy
 exit_button.pack(side='left', padx=(0, 3))
 
-change_button = ttk.Button(button_frame, text='Change', width=12)
+change_button = ttk.Button(button_frame, text=_('Change'), width=12)
 change_button['command'] = change
 change_button.pack(side='right', padx=(3, 0))
 
-open_r6_steam_button = ttk.Button(main, text='Launch R6S (Steam only)', width=22)  # NOQA
+open_r6_steam_button = ttk.Button(main, text=_('Launch R6S (Steam only)'), width=22)  # NOQA
 open_r6_steam_button['command'] = open_r6_steam
 open_r6_steam_button.pack(side='bottom', padx=25, pady=3)
 
