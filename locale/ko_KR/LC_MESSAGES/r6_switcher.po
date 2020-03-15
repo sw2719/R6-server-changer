@@ -1,0 +1,118 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-03-15 20:19+0900\n"
+"PO-Revision-Date: 2020-03-15 20:20+0900\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ko_KR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.3\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Poedit-Basepath: ../../..\n"
+"X-Poedit-SearchPath-0: r6-svchanger.py\n"
+
+#: r6-svchanger.py:37 r6-svchanger.py:90
+msgid "Warning"
+msgstr "경고"
+
+#: r6-svchanger.py:38
+msgid "Could not locate GameSettings.ini automatically."
+msgstr "GameSettings.ini 를 자동으로 찾을 수 없습니다."
+
+#: r6-svchanger.py:39
+msgid "Select 'Documents' folder in the following dialog to continue."
+msgstr "다음의 폴더 대화상자에서 '문서' 폴더를 선택하세요."
+
+#: r6-svchanger.py:75 r6-svchanger.py:157
+msgid "Info"
+msgstr "정보"
+
+#: r6-svchanger.py:76
+msgid "New server list is available."
+msgstr "새 서버 목록이 사용 가능합니다."
+
+#: r6-svchanger.py:77
+msgid "Download it now?"
+msgstr "지금 다운로드 할까요?"
+
+#: r6-svchanger.py:84
+msgid "Done"
+msgstr "완료"
+
+#: r6-svchanger.py:85
+msgid "Restart to apply changes."
+msgstr "변경 사항을 적용하려면 재시작하세요."
+
+#: r6-svchanger.py:87 r6-svchanger.py:95 r6-svchanger.py:144
+msgid "Error"
+msgstr "오류"
+
+#: r6-svchanger.py:88
+msgid "An error occured while downloading."
+msgstr "다운로드 도중 오류가 발생했습니다."
+
+#: r6-svchanger.py:90
+msgid "You chose not to download new server list."
+msgstr "새 서버 목록을 다운로드 하지 않으셨습니다."
+
+#: r6-svchanger.py:91
+msgid "Server changer might not work."
+msgstr "서버 변경에 문제가 있을 수 있습니다."
+
+#: r6-svchanger.py:96
+msgid "An error occured while checking for new server list."
+msgstr "새 서버 목록을 확인하는 도중 오류가 발생했습니다."
+
+#: r6-svchanger.py:144
+msgid "Failed to change server."
+msgstr "서버를 변경하는데 실패했습니다."
+
+#: r6-svchanger.py:146 r6-svchanger.py:165
+msgid "Current server: "
+msgstr "현재 서버: "
+
+#: r6-svchanger.py:157
+msgid "It looks like you have more than one account"
+msgstr "다수의 계정이 존재하고 설정된 서버가"
+
+#: r6-svchanger.py:158
+msgid "and they are set to different servers."
+msgstr "다름을 감지했습니다."
+
+#: r6-svchanger.py:159
+msgid "Change server and all accounts' server will be set to the selected one."
+msgstr "서버를 변경하면 모든 계정의 서버가 변경됩니다."
+
+#: r6-svchanger.py:168
+msgid "Current server: N/A"
+msgstr "현재 서버: 사용 불가"
+
+#: r6-svchanger.py:170
+msgid "Current server: Unknown or Invalid"
+msgstr "현재 서버: 알 수 없음"
+
+#: r6-svchanger.py:186
+#, python-format
+msgid "%s accounts detected"
+msgstr "%s 개의 계정 감지됨"
+
+#: r6-svchanger.py:192
+msgid "Exit"
+msgstr "종료"
+
+#: r6-svchanger.py:196
+msgid "Change"
+msgstr "변경"
+
+#: r6-svchanger.py:200
+msgid "Launch R6S (Steam only)"
+msgstr "게임 실행 (Steam)"
