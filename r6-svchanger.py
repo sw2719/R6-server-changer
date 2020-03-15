@@ -23,7 +23,7 @@ _ = t.gettext
 
 main = tk.Tk()
 main.title("")
-main.geometry("210x160+600+250")
+main.geometry("210x190+600+250")
 main.resizable(False, False)
 
 URL = 'https://raw.githubusercontent.com/sw2719/R6S-server-changer/master/server_list.yml'
@@ -153,6 +153,12 @@ def open_r6_steam():
     main.destroy()
 
 
+def open_r6_uplay():
+    subprocess.run("start uplay://launch/635/0",
+                   shell=True, check=True)
+    main.destroy()
+
+
 def sv_different_warning():
     msgbox.showwinfo(_('Info'), _('It looks like you have more than one account') + '\n' +
                      _('and they are set to different servers.') + '\n\n' +
@@ -197,9 +203,13 @@ change_button = ttk.Button(button_frame, text=_('Change'), width=12)
 change_button['command'] = change
 change_button.pack(side='right', padx=(3, 0))
 
-open_r6_steam_button = ttk.Button(main, text=_('Launch R6S (Steam only)'), width=22)  # NOQA
+open_r6_steam_button = ttk.Button(main, text=_('Launch R6S (Steam)'), width=22)  # NOQA
 open_r6_steam_button['command'] = open_r6_steam
 open_r6_steam_button.pack(side='bottom', padx=25, pady=3)
+
+open_r6_uplay_button = ttk.Button(main, text=_('Launch R6S (Uplay)'), width=22)  # NOQA
+open_r6_uplay_button['command'] = open_r6_uplay
+open_r6_uplay_button.pack(side='bottom', padx=25, pady=3)
 
 main.after(100, checkupdate)
 main.mainloop()
