@@ -94,7 +94,7 @@ def checkupdate():
                                    _('New server list is available.') + '\n' +
                                    _('Download it now?')):
                     try:
-                        with open('server_list.yml', 'w') as f:
+                        with open('server_list.yml', 'w', encoding='utf-8') as f:
                             f.write(sv_raw)
                         if getattr(sys, 'frozen', False):
                             os.execv('R6 Server Changer.exe', sys.argv)
@@ -118,10 +118,13 @@ def checkupdate():
 
 local_yml = yaml.load(local_raw)
 
-if LOCALE == 'ko_KR':
-    sv_dict = local_yml['ko']
-else:
-    sv_dict = local_yml['en']
+try:
+    if LOCALE == 'ko_KR':
+        sv_dict = local_yml['ko']
+    else:
+        sv_dict = local_yml['en']
+except TypeError:
+    sv_dict = {}
 
 
 def get_current():
