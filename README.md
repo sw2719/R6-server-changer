@@ -1,4 +1,5 @@
 # README
+* To download Windows Executable, go to [Releases](https://github.com/sw2719/R6S-server-changer/releases)
 * Supports server list updating.
 * Changes all accounts' server value.
 * How to use it is pretty straightforward. Unzip it, Run it.
