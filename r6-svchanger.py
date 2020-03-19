@@ -181,9 +181,9 @@ def open_r6_uplay():
 
 
 def sv_different_warning():
-    msgbox.showwinfo(_('Info'), _('It looks like you have more than one account') + '\n' +
-                     _('and they are set to different servers.') + '\n\n' +
-                     _("Change server and all accounts' server will be set to the selected one."))
+    msgbox.showinfo(_('Info'), _('It looks like you have more than one account') + '\n' +
+                    _('and they are set to different servers.') + '\n\n' +
+                    _("Change server and all accounts' server will be set to the selected one."))
 
 
 current = tk.StringVar()
