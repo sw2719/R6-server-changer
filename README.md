@@ -1,4 +1,5 @@
 # README
+* Gamelift servers are not supported yet. 
 * To download Windows Executable, go to [Releases](https://github.com/sw2719/R6S-server-changer/releases)
 * Supports server list updating.
 * Changes all accounts' server value.
